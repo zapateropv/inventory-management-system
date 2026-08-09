@@ -1,7 +1,10 @@
+import jwt from 'jsonwebtoken'
+import { configDotenv } from 'dotenv';
 import bcrypt, { hash } from 'bcrypt'
 import cookieParser from 'cookie-parser';
 import {pool} from '../db/db.js'
 import { generate_refresh_token, generate_access_token } from '../utils/utils.js';
+
 
 export const register = async (req, res) => {
     try {
@@ -44,7 +47,7 @@ export const login = async (req, res) => {
             last_name: user_username[0].last_name,
             email: user_username[0].email,
             username: user_username[0].username,
-            username: user_username[0].birthdate,
+            birthdate: user_username[0].birthdate,
         }
 
         const db_password = user_username[0].user_password
@@ -64,6 +67,26 @@ export const login = async (req, res) => {
     } catch (error) {
         res.status(400).json({message: "server error"})
     }
+}
+
+
+export const refreshNewToken = (req, res) => {
+    const refresh_token = req.cookies.refresh_token
+    configDotenv()
+    if(!refresh_token) return res.status(403).json({message: 'no token found'})
+
+    jwt.verify(refresh_token, process.env.REFRESH_TOKEN, (err, user) => {
+          if(err) return res.json({message: 'invalid token ' + err})
+            const newUser = {
+                first_name: user.first_name,
+                last_name: user.last_name,
+                email: user.email,
+                username: user.username,
+                birthdate: user.birthdate,
+            }
+            const access_token = generate_access_token(newUser)
+            res.json({access_token: access_token})
+    } )
 }
 
 //MAIN PAGE ROUTES
