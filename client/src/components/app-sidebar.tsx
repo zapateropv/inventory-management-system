@@ -1,9 +1,8 @@
-"use client"
+
 
 import * as React from "react"
 
 import { NavMain } from "@/components/nav-main"
-import { NavProjects } from "@/components/nav-projects"
 import { NavUser } from "@/components/nav-user"
 import { TeamSwitcher } from "@/components/team-switcher"
 import {
@@ -13,8 +12,8 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar"
-import { GalleryVerticalEndIcon, AudioLinesIcon, TerminalIcon, TerminalSquareIcon, BotIcon, BookOpenIcon, Settings2Icon, FrameIcon, PieChartIcon, MapIcon } from "lucide-react"
-
+import { GalleryVerticalEndIcon, Plus,  AudioLinesIcon, TerminalIcon, TerminalSquareIcon, BotIcon, Settings2Icon,  } from "lucide-react"
+import { Link } from "react-router-dom"
 // This is sample data.
 const data = {
   user: {
@@ -51,7 +50,7 @@ const data = {
   navMain: [
     {
       title: "Dashboard",
-      url: "#",
+      url: "/dashboard",
       icon: (
         <TerminalSquareIcon
         />
@@ -60,7 +59,7 @@ const data = {
     },
     {
       title: "Inventory",
-      url: "#",
+      url: "/inventory",
       icon: (
         <BotIcon
         />
@@ -69,16 +68,16 @@ const data = {
     },
     {
       title: "Add Product",
-      url: "#",
+      url: "/add-product",
       icon: (
-        <BookOpenIcon
+        <Plus
         />
       ),
       
     },
     {
       title: "Settings",
-      url: "#",
+      url: "/settings",
       icon: (
         <Settings2Icon
         />
