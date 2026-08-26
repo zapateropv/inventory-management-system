@@ -42,6 +42,11 @@ export const login = async (req, res) => {
          if(user_username.length === 0){
            return res.status(404).json({message: "user not found"})
         }
+
+        if(user_username[0].email != email){
+           return res.status(404).json({message: "wrong email"})
+        }
+       
         const user = {
             first_name: user_username[0].first_name,
             last_name: user_username[0].last_name,
@@ -73,10 +78,10 @@ export const login = async (req, res) => {
 export const refreshNewToken = (req, res) => {
     const refresh_token = req.cookies.refresh_token
     configDotenv()
-    if(!refresh_token) return res.status(403).json({message: 'no token found'})
+    if(!refresh_token) return res.status(401).json({message: 'no token found'})
 
     jwt.verify(refresh_token, process.env.REFRESH_TOKEN, (err, user) => {
-          if(err) return res.json({message: 'invalid token ' + err})
+          if(err) return res.status(401).json({message: 'Invalid or expired refresh token'});
             const newUser = {
                 first_name: user.first_name,
                 last_name: user.last_name,
@@ -85,8 +90,24 @@ export const refreshNewToken = (req, res) => {
                 birthdate: user.birthdate,
             }
             const access_token = generate_access_token(newUser)
-            res.json({access_token: access_token})
+            res.json({new_access_token: access_token})
     } )
+}
+
+//CHECK ROUTE
+
+export const checkRoute = async (req, res) => {
+    const user = req.user
+    try {
+        if(!user){
+            return res.json({message: "user not found"})
+        }
+
+           res.status(200).json({success: true, user: user})   
+    } catch (error) {
+        res.json({message: "no token found"})
+    }
+  
 }
 
 //MAIN PAGE ROUTES
