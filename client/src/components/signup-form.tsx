@@ -1,3 +1,5 @@
+import { useState } from "react"
+import { useStore } from "../../store/store"
 import { Link } from "react-router-dom"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -10,12 +12,24 @@ import {
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 
+
+
 export function SignupForm({
   className,
   ...props
 }: React.ComponentProps<"form">) {
+  const {register_add_user} = useStore()
+  
+  const [firstName, setFirstName] = useState<string>("")
+  const [lastName, setLastName] = useState<string>("")
+  const [password, setPassword] = useState<string>("")
+  const [email, setEmail] = useState<string>("")
+  const [birthdate, setBirthdate] = useState<Date>("")
+  const [username, setUsername] = useState<string>("")
+  
+  console.log(birthdate)
   return (
-    <form className={cn("flex flex-col gap-6", className)} {...props}>
+    <form className={cn("flex flex-col gap-6", className)} {...props} onSubmit={(e)=>e.preventDefault()}>
       <FieldGroup>
         <div className="flex flex-col items-center gap-1 text-center">
           <h1 className="text-2xl font-bold">Create your account</h1>
@@ -31,6 +45,8 @@ export function SignupForm({
             placeholder="John "
             required
             className="bg-background"
+            value={firstName}
+            onChange={(e)=> setFirstName(e.target.value)}
           />
         </Field>
          <Field>
@@ -41,6 +57,8 @@ export function SignupForm({
             placeholder="Doe"
             required
             className="bg-background"
+            value={lastName}
+            onChange={(e)=> setLastName(e.target.value)}
           />
         </Field>
          <Field>
@@ -51,6 +69,8 @@ export function SignupForm({
             placeholder="john123"
             required
             className="bg-background"
+            value={username}
+            onChange={(e)=> setUsername(e.target.value)}
           />
         </Field>
          <Field>
@@ -61,6 +81,8 @@ export function SignupForm({
             placeholder="John Doe"
             required
             className="bg-background"
+            value={birthdate}
+            onChange={(e)=> setBirthdate(e.target.value)}
           />
         </Field>
         <Field>
@@ -71,6 +93,8 @@ export function SignupForm({
             placeholder="m@example.com"
             required
             className="bg-background"
+            value={email}
+            onChange={(e)=> setEmail(e.target.value)}
           />
           <FieldDescription>
             We&apos;ll use this to contact you. We will not share your email
@@ -84,12 +108,16 @@ export function SignupForm({
             type="password"
             required
             className="bg-background"
+            value={password}
+            onChange={(e)=> setPassword(e.target.value)}
           />
          
         </Field>
        
         <Field>
-          <Button type="submit" className='cursor-pointer'>Create Account</Button>
+          <Button type="submit" className='cursor-pointer'
+           onClick={() => register_add_user({firstName, lastName, password, email, birthdate, username})}
+          >Create Account</Button>
         </Field>
         <FieldSeparator>Or continue with</FieldSeparator>
         <Field>
