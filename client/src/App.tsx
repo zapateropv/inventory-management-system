@@ -11,7 +11,7 @@ function App() {
   }, [checkAuth]);
 
   if (isCheckingAuth) {
-    return <div>Loading...</div>;
+    return <div className="bg-white">Loading...</div>;
   }
 
   return <Outlet />;
