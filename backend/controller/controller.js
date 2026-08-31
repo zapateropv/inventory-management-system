@@ -48,6 +48,7 @@ export const login = async (req, res) => {
         }
        
         const user = {
+            id: user_username[0].user_id,
             first_name: user_username[0].first_name,
             last_name: user_username[0].last_name,
             email: user_username[0].email,
@@ -114,4 +115,15 @@ export const checkRoute = async (req, res) => {
 
 export const dashboard = (req, res) => {
     res.send('test')
+}
+
+export const inventory = async (req, res) => {
+    try {
+        const userID = req.user.id
+        const [products] = await pool.query('SELECT * FROM products WHERE user_id = ?', [userID])
+     
+        res.status(200).json( products)
+    } catch (error) {
+        res.json({message: "couldnt fetch data" + error})
+    }
 }

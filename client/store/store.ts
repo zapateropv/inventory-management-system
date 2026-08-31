@@ -1,6 +1,21 @@
 import { create } from "zustand";
 import axios from 'axios'
 
+interface Products{
+  product_id: number;
+  product_name: string;
+  category: string;
+  quantity: number;
+  sku: string;
+  stock_threshold: number;
+  user_id: number;
+  CreatedAt: string;
+  UpdatedAt: string;
+  price: number;
+}
+
+
+
 interface User {
   firstName: string;
   lastName: string;
@@ -20,17 +35,20 @@ type Store = {
   isAuthenticated: boolean;
   access_token: string | null;
   users: object | null;
+  products: Products[];
   isCheckingAuth: boolean;
   register_add_user: (user:User) => Promise<void>;
   login: (user:User_LogIn) => Promise<void>;
   checkAuth: () => Promise<void>;
   refreshToken: () => Promise<string | null>;
+  getProducts: () => Promise<void>
 };
 
 export const useStore = create<Store>()((set, get) => ({
   isAuthenticated: false,
   access_token: null,
   users: null,
+  products: [],
   isCheckingAuth: true,
   register_add_user: async ({firstName, lastName, password, email, birthdate, username}:User) => {
    
@@ -119,6 +137,31 @@ refreshToken: async () => {
       isAuthenticated: false
     });
      throw error
+  }
+},
+ getProducts: async () => {
+  try {
+    const accessToken = get().access_token;
+
+    
+
+    const res = await axios.get<Products[]>(
+      "http://localhost:8000/inventory",
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+        withCredentials: true,
+      }
+    );
+
+    console.log(res.data);
+
+    set({
+      products: res.data,
+    });
+  } catch (error) {
+    console.log(error);
   }
 }
 }));
