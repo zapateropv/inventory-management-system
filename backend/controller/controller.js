@@ -69,7 +69,7 @@ export const login = async (req, res) => {
             secure: false, 
             maxAge: 7 * 24 * 60 * 60 * 1000, 
         })
-        res.status(200).json({message: "log in successfully", access_token:  access_token })
+        res.status(200).json({message: "log in successfully", access_token:  access_token  })
     } catch (error) {
         res.status(400).json({message: "server error"})
     }
@@ -84,6 +84,7 @@ export const refreshNewToken = (req, res) => {
     jwt.verify(refresh_token, process.env.REFRESH_TOKEN, (err, user) => {
           if(err) return res.status(401).json({message: 'Invalid or expired refresh token'});
             const newUser = {
+                id: user.id,
                 first_name: user.first_name,
                 last_name: user.last_name,
                 email: user.email,
@@ -119,7 +120,9 @@ export const dashboard = (req, res) => {
 
 export const inventory = async (req, res) => {
     try {
+     
         const userID = req.user.id
+        
         const [products] = await pool.query('SELECT * FROM products WHERE user_id = ?', [userID])
      
         res.status(200).json( products)
