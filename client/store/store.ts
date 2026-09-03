@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import axios from 'axios'
 
-interface Products{
+export interface Products{
   product_id: number;
   product_name: string;
   category: string;
@@ -9,8 +9,8 @@ interface Products{
   sku: string;
   stock_threshold: number;
   user_id: number;
-  CreatedAt: string;
-  UpdatedAt: string;
+  CreatedAt?: string | null;
+  UpdatedAt?: string | null;
   price: number;
 }
 
@@ -143,6 +143,7 @@ refreshToken: async () => {
   try {
     const accessToken = get().access_token;
 
+  
     
 
     const res = await axios.get<Products[]>(
@@ -155,7 +156,7 @@ refreshToken: async () => {
       }
     );
 
-    console.log(res.data);
+    console.log(res)
 
     set({
       products: res.data,
