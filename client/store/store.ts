@@ -2,13 +2,13 @@ import { create } from "zustand";
 import axios from 'axios'
 
 export interface Products{
-  product_id: number;
+  product_id?: number;
   product_name: string;
   category: string;
   quantity: number;
   sku: string;
   stock_threshold: number;
-  user_id: number;
+  user_id?: number;
   CreatedAt?: string | null;
   UpdatedAt?: string | null;
   price: number;
@@ -41,7 +41,8 @@ type Store = {
   login: (user:User_LogIn) => Promise<void>;
   checkAuth: () => Promise<void>;
   refreshToken: () => Promise<string | null>;
-  getProducts: () => Promise<void>
+  getProducts: () => Promise<void>;
+  insertProducts: (products:Products) => Promise<void>;
 };
 
 export const useStore = create<Store>()((set, get) => ({
@@ -163,6 +164,27 @@ refreshToken: async () => {
     });
   } catch (error) {
     console.log(error);
+  }
+},
+insertProducts: async ({product_name, category, price, quantity, sku, stock_threshold}:Products) => {
+  try {
+    const token = get().access_token
+    await axios.post('http://localhost:8000/add-product', 
+      { 
+        product_name: product_name,
+        category: category,
+        quantity: quantity,
+        sku: sku,
+        stock_threshold: stock_threshold,
+        price: price
+      }, 
+      {withCredentials: true,
+       headers:{
+        Authorization: `Bearer ${token}`
+       }
+      })
+  } catch (error) {
+    alert(error)
   }
 }
 }));

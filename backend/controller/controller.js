@@ -130,3 +130,17 @@ export const inventory = async (req, res) => {
         res.json({message: "couldnt fetch data" + error})
     }
 }
+
+export const add_product = async (req, res) => {
+    try {
+       const {product_name, category, price, quantity, sku, stock_threshold} = req.body
+       const user_id = req.user.id
+       await pool.query('INSERT INTO products (product_name, category, quantity, sku, stock_threshold, user_id, price) VALUES(?, ?, ?, ?, ?, ?, ?)',
+        [product_name, category, quantity, sku, stock_threshold, user_id, price]
+       )
+
+       res.status(201).json({message: "product added successfully"})
+    } catch (error) {
+         res.json({message: error})
+    }
+}
