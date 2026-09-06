@@ -116,7 +116,7 @@ export const columns = columnHelper.columns([
      <h1>Action</h1>
     ),
     cell: ({ row }) => (
-     <button className="cursor-pointer" >Delete</button>
+     <button className="cursor-pointer" onClick={() => console.log(row.original.product_id)} >Delete</button>
     ),
     
     enableSorting: false,
