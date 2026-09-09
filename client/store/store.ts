@@ -2,7 +2,7 @@ import { create } from "zustand";
 import axios from 'axios'
 
 export interface Products{
-  product_id?: number;
+  product_id: number;
   product_name: string;
   category: string;
   quantity: number;
