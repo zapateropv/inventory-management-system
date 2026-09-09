@@ -5,7 +5,7 @@ import { useStore } from "../../store/store";
 export default function DemoPage() {
   const products = useStore((state) => state.products);
   const deleteProducts = useStore((state) => state.deleteProducts);
-
+//
   const productColumns = columns(deleteProducts);
 
   return (
