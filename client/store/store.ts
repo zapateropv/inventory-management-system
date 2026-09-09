@@ -43,6 +43,7 @@ type Store = {
   refreshToken: () => Promise<string | null>;
   getProducts: () => Promise<void>;
   insertProducts: (products:Products) => Promise<void>;
+  deleteProducts: (id:number) => Promise <void>;
 };
 
 export const useStore = create<Store>()((set, get) => ({
@@ -183,6 +184,20 @@ insertProducts: async ({product_name, category, price, quantity, sku, stock_thre
         Authorization: `Bearer ${token}`
        }
       })
+  } catch (error) {
+    alert(error)
+  }
+},
+deleteProducts: async (id:number) => {
+  try {
+    const token = get().access_token
+    await axios.delete(`http://localhost:8000/delete-product/${id}`,
+      {withCredentials: true,
+       headers: {
+        Authorization: `Bearer ${token}`
+       }
+      }
+    )
   } catch (error) {
     alert(error)
   }

@@ -144,3 +144,14 @@ export const add_product = async (req, res) => {
          res.json({message: error})
     }
 }
+
+
+export const delete_product = async (req, res) => {
+    try {
+         const {id} = req.params
+         await pool.query('DELETE FROM products WHERE product_id = ?', [id])
+         res.status(200).json({message: 'deleted successfully'})
+    } catch (error) {
+        res.json({message: error})
+    }
+}

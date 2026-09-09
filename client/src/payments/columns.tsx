@@ -7,14 +7,7 @@ import { MoreHorizontal } from "lucide-react"
  import { ArrowUpDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { type Products } from "../../store/store"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+import { useStore } from "../../store/store"
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 export type Payment = {
