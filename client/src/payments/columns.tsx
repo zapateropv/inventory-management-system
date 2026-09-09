@@ -21,7 +21,7 @@ export type Payment = {
 // Use `accessor` for data columns and `display` for columns without one.
 const columnHelper = createColumnHelper<DataTableFeatures, Products>()
 
-export const columns = columnHelper.columns([
+export const columns = (deleteProducts: (id: number) => Promise<void>) => columnHelper.columns([
  
   columnHelper.accessor("product_name", {
       header: ({ column }) => {
@@ -109,7 +109,8 @@ export const columns = columnHelper.columns([
      <h1>Action</h1>
     ),
     cell: ({ row }) => (
-     <button className="cursor-pointer" onClick={() => console.log(row.original.product_id)} >Delete</button>
+     <button className="cursor-pointer" 
+      onClick={() => deleteProducts(row.original.product_id)} >Delete</button>
     ),
     
     enableSorting: false,

@@ -30,6 +30,8 @@ export function DataTable<TData extends RowData>({
   columns,
   data,
 }: DataTableProps<TData>) {
+    
+  
     const [sorting, setSorting] = React.useState<SortingState>([])
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
