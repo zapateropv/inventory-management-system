@@ -22,14 +22,14 @@ import {
 const items = [
 
 
-  { label: "Electronics", value: "electronics" },
-  { label: "Office Supplies", value: "office_supplies" },
-  { label: "Furniture", value: "furniture" },
-  { label: "Tools & Equipment", value: "tools_equipment" },
-  { label: "Cleaning Supplies", value: "cleaning_supplies" },
-  { label: "Food & Beverages", value: "food_beverages" },
-  { label: "Clothing & Apparel", value: "clothing_apparel" },
-  { label: "Hardware", value: "hardware" },
+  { label: "Electronics", value: "Electronics" },
+  { label: "Office Supplies", value: "Office Supplies" },
+  { label: "Furniture", value: "Furniture" },
+  { label: "Tools & Equipment", value: "Tools & Equipment" },
+  { label: "Cleaning Supplies", value: "Cleaning Supplies" },
+  { label: "Food & Beverages", value: "Food & Beverages" },
+  { label: "Clothing & Apparel", value: "Clothing & Apparel" },
+  { label: "Hardware", value: "Hardware" },
 
 ]
 

@@ -155,3 +155,12 @@ export const delete_product = async (req, res) => {
         res.json({message: error})
     }
 }
+
+export const edit_prodct = async (req, res) => {
+    try {
+        const {id} = req.params
+        
+    } catch (error) {
+        res.json({message: error})
+    }
+}
