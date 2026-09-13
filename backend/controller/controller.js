@@ -124,7 +124,7 @@ export const inventory = async (req, res) => {
         const userID = req.user.id
         
         const [products] = await pool.query('SELECT * FROM products WHERE user_id = ?', [userID])
-     
+      
         res.status(200).json( products)
     } catch (error) {
         res.json({message: "couldnt fetch data" + error})
@@ -159,7 +159,17 @@ export const delete_product = async (req, res) => {
 export const edit_prodct = async (req, res) => {
     try {
         const {id} = req.params
-        
+        const {product_name, category, quantity, sku, stock_threshold, price} = req.body
+        const [products] = await pool.query('UPDATE  products SET product_name = ?, category = ?, quantity = ?, sku = ?, stock_threshold = ?, price = ? WHERE product_id = ?'
+            ,[product_name, category, quantity, sku, stock_threshold, price, id]
+        )
+        console.log(products)
+        if(products.affectedRows === 0){
+           return res.status(404).json({message: "product not found"})
+        }else{
+           return res.status(200).json({message: "product updated successfully"})
+        }
+       
     } catch (error) {
         res.json({message: error})
     }
