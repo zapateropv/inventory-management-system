@@ -1,7 +1,7 @@
 import { create } from "zustand";
-import axios from 'axios'
+import axios from "axios";
 
-export interface Products{
+export interface Products {
   product_id: number;
   product_name: string;
   category: string;
@@ -14,7 +14,14 @@ export interface Products{
   price: number;
 }
 
-
+export interface NewProduct {
+  product_name: string;
+  category: string;
+  quantity: number;
+  sku: string;
+  stock_threshold: number;
+  price: number;
+}
 
 interface User {
   firstName: string;
@@ -25,10 +32,10 @@ interface User {
   username: string;
 }
 
-interface User_LogIn{
+interface User_LogIn {
   email: string;
   username: string;
-  password: string
+  password: string;
 }
 
 type Store = {
@@ -37,13 +44,27 @@ type Store = {
   users: object | null;
   products: Products[];
   isCheckingAuth: boolean;
-  register_add_user: (user:User) => Promise<void>;
-  login: (user:User_LogIn) => Promise<void>;
+
+  register_add_user: (user: User) => Promise<void>;
+  login: (user: User_LogIn) => Promise<void>;
   checkAuth: () => Promise<void>;
   refreshToken: () => Promise<string | null>;
   getProducts: () => Promise<void>;
-  insertProducts: (products:Products) => Promise<void>;
-  deleteProducts: (id:number) => Promise <void>;
+
+  insertProducts: (product: NewProduct) => Promise<void>;
+
+  deleteProducts: (id: number) => Promise<void>;
+
+  updateProducts: (
+    id: number,
+    name: string,
+    category: string,
+    quantity: number,
+    sku: string,
+    threshold: number,
+    user_id: number,
+    price: number
+  ) => Promise<void>;
 };
 
 export const useStore = create<Store>()((set, get) => ({
@@ -52,154 +73,225 @@ export const useStore = create<Store>()((set, get) => ({
   users: null,
   products: [],
   isCheckingAuth: true,
-  register_add_user: async ({firstName, lastName, password, email, birthdate, username}:User) => {
-   
+
+  register_add_user: async ({
+    firstName,
+    lastName,
+    password,
+    email,
+    birthdate,
+    username,
+  }: User) => {
     try {
-      await axios.post("http://localhost:8000/register", {
-            first_name: firstName,
-            last_name: lastName,
-            password: password,
-            email: email,
-            birthdate: birthdate,
-            username: username
-      }, {withCredentials: true},
-     )
+      await axios.post(
+        "http://localhost:8000/register",
+        {
+          first_name: firstName,
+          last_name: lastName,
+          password: password,
+          email: email,
+          birthdate: birthdate,
+          username: username,
+        },
+        {
+          withCredentials: true,
+        }
+      );
     } catch (error) {
-      alert(error)
+      alert(error);
     }
   },
-  login: async ({email, username, password}:User_LogIn) => {
+
+  login: async ({ email, username, password }: User_LogIn) => {
     try {
-    const user = await axios.post("http://localhost:8000/login",
+      const user = await axios.post(
+        "http://localhost:8000/login",
         {
           email: email,
           username: username,
-          password: password
+          password: password,
         },
-        {withCredentials: true}
-      )
-      set({access_token: user.data.access_token, isAuthenticated: true})
+        {
+          withCredentials: true,
+        }
+      );
+
+      set({
+        access_token: user.data.access_token,
+        isAuthenticated: true,
+      });
     } catch (error) {
-      alert(error)
+      alert(error);
     }
   },
-checkAuth: async () => {
-  set({ isCheckingAuth: true });
 
-  try {
-    const accessToken = await get().refreshToken();
-    console.log(accessToken)
-    const res = await axios.get(
-      "http://localhost:8000/me",
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`
+  checkAuth: async () => {
+    set({ isCheckingAuth: true });
+
+    try {
+      const accessToken = await get().refreshToken();
+
+      const res = await axios.get(
+        "http://localhost:8000/me",
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+          withCredentials: true,
+        }
+      );
+
+      set({
+        isAuthenticated: true,
+        users: res.data.user,
+        isCheckingAuth: false,
+      });
+    } catch (error) {
+      set({
+        isAuthenticated: false,
+        users: null,
+        access_token: null,
+        isCheckingAuth: false,
+      });
+
+      console.log("Not authenticated");
+    }
+  },
+
+  refreshToken: async () => {
+    try {
+      const res = await axios.post(
+        "http://localhost:8000/refresh",
+        {},
+        {
+          withCredentials: true,
+        }
+      );
+
+      set({
+        access_token: res.data.new_access_token,
+      });
+
+      return res.data.new_access_token;
+    } catch (error) {
+      set({
+        access_token: null,
+        isAuthenticated: false,
+      });
+
+      throw error;
+    }
+  },
+
+  getProducts: async () => {
+    try {
+      const accessToken = get().access_token;
+
+      const res = await axios.get<Products[]>(
+        "http://localhost:8000/inventory",
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+          withCredentials: true,
+        }
+      );
+
+      set({
+        products: res.data,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  },
+
+  insertProducts: async ({
+    product_name,
+    category,
+    price,
+    quantity,
+    sku,
+    stock_threshold,
+  }: NewProduct) => {
+    try {
+      const token = get().access_token;
+
+      await axios.post(
+        "http://localhost:8000/add-product",
+        {
+          product_name: product_name,
+          category: category,
+          quantity: quantity,
+          sku: sku,
+          stock_threshold: stock_threshold,
+          price: price,
         },
-        withCredentials: true
-      }
-    );
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+    } catch (error) {
+      alert(error);
+    }
+  },
 
-    set({
-      isAuthenticated: true,
-      users: res.data.user,
-      isCheckingAuth: false
-    });
+  deleteProducts: async (id: number) => {
+    try {
+      const token = get().access_token;
 
-  } catch (error) {
-    set({
-      isAuthenticated: false,
-      users: null,
-      access_token: null,
-      isCheckingAuth: false
-    });
+      await axios.delete(
+        `http://localhost:8000/delete-product/${id}`,
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+    } catch (error) {
+      alert(error);
+    }
+  },
 
-    console.log("Not authenticated");
-  }
-},
-refreshToken: async () => {
-  try {
-    const res = await axios.post(
-      "http://localhost:8000/refresh",
-      {},
-      {
-        withCredentials: true
-      }
-    );
+  updateProducts: async (
+    id,
+    name,
+    category,
+    quantity,
+    sku,
+    threshold,
+    user_id,
+    price
+  ) => {
+    try {
+      const token = get().access_token;
 
-    set({
-      access_token: res.data.new_access_token
-    });
-
-    return res.data.new_access_token;
-
-  } catch (error) {
-    
-    set({
-      access_token: null,
-      isAuthenticated: false
-    });
-     throw error
-  }
-},
- getProducts: async () => {
-  try {
-    const accessToken = get().access_token;
-
-  
-    
-
-    const res = await axios.get<Products[]>(
-      "http://localhost:8000/inventory",
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
+      await axios.put(
+        `http://localhost:8000/update-product/${id}`,
+        {
+          product_id: id,
+          product_name: name,
+          category: category,
+          quantity: quantity,
+          sku: sku,
+          stock_threshold: threshold,
+          user_id: user_id,
+          price: price,
         },
-        withCredentials: true,
-      }
-    );
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-    console.log(res)
-
-    set({
-      products: res.data,
-    });
-  } catch (error) {
-    console.log(error);
-  }
-},
-insertProducts: async ({product_name, category, price, quantity, sku, stock_threshold}:Products) => {
-  try {
-    const token = get().access_token
-    await axios.post('http://localhost:8000/add-product', 
-      { 
-        product_name: product_name,
-        category: category,
-        quantity: quantity,
-        sku: sku,
-        stock_threshold: stock_threshold,
-        price: price
-      }, 
-      {withCredentials: true,
-       headers:{
-        Authorization: `Bearer ${token}`
-       }
-      })
-  } catch (error) {
-    alert(error)
-  }
-},
-deleteProducts: async (id:number) => {
-  try {
-    const token = get().access_token
-    await axios.delete(`http://localhost:8000/delete-product/${id}`,
-      {withCredentials: true,
-       headers: {
-        Authorization: `Bearer ${token}`
-       }
-      }
-    )
-  } catch (error) {
-    alert(error)
-  }
-}
+      console.log(id, name, category, quantity, sku, threshold, user_id, price);
+    } catch (error) {
+      alert(error);
+    }
+  },
 }));
