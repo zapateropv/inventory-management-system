@@ -114,8 +114,17 @@ export const checkRoute = async (req, res) => {
 
 //MAIN PAGE ROUTES
 
-export const dashboard = (req, res) => {
-    res.send('test')
+export const dashboard = async (req, res) => {
+    try {
+        const id = req.user.id
+        const [totalProducts] = await pool.query('SELECT COUNT(*) AS totalProducts, COALESCE(SUM(quantity * price), 0) AS totalValue, COUNT(CASE WHEN quantity <= 5 THEN 1 END) AS lowStockFROM products WHERE user_id = ?', [id]);
+       
+        
+       res.status(200).json(totalProducts  )
+
+    } catch (error) {
+        res.json({message: error})
+    }
 }
 
 export const inventory = async (req, res) => {
@@ -174,3 +183,4 @@ export const edit_prodct = async (req, res) => {
         res.json({message: error})
     }
 }
+
