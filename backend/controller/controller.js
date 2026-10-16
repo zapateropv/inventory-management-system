@@ -117,9 +117,9 @@ export const checkRoute = async (req, res) => {
 export const dashboard = async (req, res) => {
     try {
         const id = req.user.id
-        const [totalProducts] = await pool.query('SELECT COUNT(*) AS totalProducts, COALESCE(SUM(quantity * price), 0) AS totalValue, COUNT(CASE WHEN quantity <= 5 THEN 1 END) AS lowStockFROM products WHERE user_id = ?', [id]);
+        const [totalProducts] = await pool.query('SELECT COUNT(*) AS totalProducts, COALESCE(SUM(quantity * price), 0) AS totalValue, COUNT(CASE WHEN quantity <= 5 THEN 1 END) AS lowStock FROM products WHERE user_id = ?', [id]);
        
-        
+        console.log('test')
        res.status(200).json(totalProducts  )
 
     } catch (error) {
