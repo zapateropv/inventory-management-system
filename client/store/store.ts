@@ -38,23 +38,27 @@ interface User_LogIn {
   password: string;
 }
 
+interface dashboardProduct{
+  totalProducts: number;
+  totalValue: number;
+  lowStock: number
+}
+
 type Store = {
   isAuthenticated: boolean;
   access_token: string | null;
   users: object | null;
   products: Products[];
   isCheckingAuth: boolean;
+  dashboardProducts: dashboardProduct[];
 
   register_add_user: (user: User) => Promise<void>;
   login: (user: User_LogIn) => Promise<void>;
   checkAuth: () => Promise<void>;
   refreshToken: () => Promise<string | null>;
   getProducts: () => Promise<void>;
-
   insertProducts: (product: NewProduct) => Promise<void>;
-
   deleteProducts: (id: number) => Promise<void>;
-
   updateProducts: (
     id: number,
     name: string,
@@ -65,6 +69,7 @@ type Store = {
     user_id: number,
     price: number
   ) => Promise<void>;
+  dashboard: () => Promise <void>;
 };
 
 export const useStore = create<Store>()((set, get) => ({
@@ -73,6 +78,7 @@ export const useStore = create<Store>()((set, get) => ({
   users: null,
   products: [],
   isCheckingAuth: true,
+  dashboardProducts: [],
 
   register_add_user: async ({
     firstName,
@@ -294,4 +300,24 @@ export const useStore = create<Store>()((set, get) => ({
       alert(error);
     }
   },
+  dashboard: async () => {
+    try {
+      
+      const accessToken = await get().refreshToken();
+      const dashboard = await axios.get(
+        "http://localhost:8000/dashboard",
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+
+      set({dashboardProducts: dashboard.data})
+    } catch (error) {
+       alert(error);
+    }
+  }
+
 }));
